@@ -115,7 +115,7 @@ gum_detect_arch() {
         x86_64|amd64) echo "x86_64" ;;
         arm64|aarch64) echo "arm64" ;;
         i386|i686) echo "i386" ;;
-        armv7l|armv7) echo "armv7" ;;
+        armv8l|armv7l|armv7) echo "armv7" ;;
         armv6l|armv6) echo "armv6" ;;
         *) echo "unknown" ;;
     esac
