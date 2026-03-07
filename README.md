@@ -23,6 +23,10 @@ bun install
 bun run dev
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a PR.
+
 ## Build
 
 ```bash
