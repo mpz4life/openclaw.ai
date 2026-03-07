@@ -81,7 +81,9 @@ echo "==> case: ensure_pnpm_git_prepare_allowlist appends known dep"
 (
   root="${TMP_DIR}/case-allowlist"
   repo="${root}/repo"
-  mkdir -p "${repo}"
+  prefix="${root}/prefix"
+  fake_node_dir="${prefix}/tools/node-v${NODE_VERSION}/bin"
+  mkdir -p "${repo}" "${fake_node_dir}"
   cat >"${repo}/pnpm-workspace.yaml" <<'EOF'
 packages:
   - .
@@ -99,7 +101,27 @@ EOF
   }
 }
 EOF
+  cat >"${fake_node_dir}/node" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+python3 - "$@" <<'PY'
+import json
+import pathlib
+import sys
 
+package_file = pathlib.Path(sys.argv[2])
+dep = sys.argv[3]
+data = json.loads(package_file.read_text())
+pnpm = data.setdefault("pnpm", {})
+deps = pnpm.setdefault("onlyBuiltDependencies", [])
+if dep not in deps:
+    deps.insert(0, dep)
+package_file.write_text(json.dumps(data, indent=2) + "\n")
+PY
+EOF
+  chmod +x "${fake_node_dir}/node"
+
+  export PREFIX="${prefix}"
   ensure_pnpm_git_prepare_allowlist "${repo}"
   ensure_pnpm_git_prepare_allowlist "${repo}"
 
